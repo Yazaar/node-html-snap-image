@@ -1,14 +1,14 @@
 import { existsSync, mkdirSync, readdirSync } from "fs";
 import puppeteer from "puppeteer";
 import puppeteerCore from "puppeteer-core";
-import rimraf from "rimraf";
+import * as rimraf from "rimraf";
 import { createWorker } from "tesseract.js";
 
 import { nodeHtmlToImage } from "./main";
 
 describe("node-html-to-image", () => {
-  let mockExit;
-  let mockConsoleErr;
+  let mockExit: jest.SpyInstance;
+  let mockConsoleErr: jest.SpyInstance;
   const originalConsoleError = console.error;
   beforeEach(() => {
     rimraf.sync("./generated");
@@ -38,6 +38,7 @@ describe("node-html-to-image", () => {
           type: "jpeg",
           // @ts-ignore
           quality: "wrong value",
+          puppeteerArgs: { args: ['--no-sandbox'] }
         });
       }).rejects.toThrow();
 
@@ -51,6 +52,7 @@ describe("node-html-to-image", () => {
       await nodeHtmlToImage({
         output: "./generated/image.png",
         html: "<html></html>",
+        puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       expect(existsSync("./generated/image.png")).toBe(true);
@@ -59,6 +61,7 @@ describe("node-html-to-image", () => {
     it("should return a buffer", async () => {
       const result = await nodeHtmlToImage({
         html: "<html></html>",
+        puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       expect(result).toBeInstanceOf(Buffer);
@@ -70,6 +73,7 @@ describe("node-html-to-image", () => {
         // @ts-ignore
         await nodeHtmlToImage({
           output: "./generated/image.png",
+          puppeteerArgs: { args: ['--no-sandbox'] }
         });
       }).rejects.toThrow();
       expect(mockConsoleErr).toHaveBeenCalledWith(
@@ -81,7 +85,8 @@ describe("node-html-to-image", () => {
       await expect(async () => {
         await nodeHtmlToImage({
           timeout: 500,
-          html: "<html></html>"
+          html: "<html></html>",
+          puppeteerArgs: { args: ['--no-sandbox'] }
         });
       }).rejects.toThrow();
       expect(mockConsoleErr).toHaveBeenCalledWith(
@@ -94,6 +99,7 @@ describe("node-html-to-image", () => {
         output: "./generated/image.jpg",
         html: "<html></html>",
         type: "jpeg",
+        puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       expect(existsSync("./generated/image.jpg")).toBe(true);
@@ -103,6 +109,7 @@ describe("node-html-to-image", () => {
       await nodeHtmlToImage({
         output: "./generated/image.png",
         html: "<html><body>Hello world!</body></html>",
+        puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       const text = await getTextFromImage("./generated/image.png");
@@ -114,6 +121,7 @@ describe("node-html-to-image", () => {
         output: "./generated/image.png",
         html: "<html><body>Hello {{name}}!</body></html>",
         content: { name: "Yvonnick" },
+        puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       const text = await getTextFromImage("./generated/image.png");
@@ -126,6 +134,7 @@ describe("node-html-to-image", () => {
         html: '<html><body>Hello <div id="section">{{name}}!</div></body></html>',
         content: { name: "Sangwoo" },
         selector: "div#section",
+        puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       const text = await getTextFromImage("./generated/image.png");
@@ -143,6 +152,7 @@ describe("node-html-to-image", () => {
           { name: "Yvonnick", output: "./generated/image1.png" },
           { name: "World", output: "./generated/image2.png" },
         ],
+        puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       const text1 = await getTextFromImage("./generated/image1.png");
@@ -158,6 +168,7 @@ describe("node-html-to-image", () => {
         quality: 300,
         html: "<html><body>Hello {{name}}!</body></html>",
         content: [{ name: "Yvonnick" }, { name: "World" }],
+        puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       expect(result?.[0]).toBeInstanceOf(Buffer);
@@ -175,6 +186,7 @@ describe("node-html-to-image", () => {
           },
           { output: "./generated/image2.png", selector: "div#section2" },
         ],
+        puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       const text1 = await getTextFromImage("./generated/image1.png");
@@ -197,6 +209,7 @@ describe("node-html-to-image", () => {
         quality: 300,
         html: "<html><body>Hello {{name}}!</body></html>",
         content,
+        puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       expect(readdirSync("./generated")).toHaveLength(NUMBER_OF_IMAGES);
@@ -209,8 +222,8 @@ describe("node-html-to-image", () => {
       await nodeHtmlToImage({
         output: "./generated/image.png",
         html: "<html></html>",
-        puppeteerArgs: { executablePath },
-        puppeteer: puppeteerCore,
+        puppeteerArgs: { executablePath, args: ['--no-sandbox'] },
+        puppeteer: puppeteerCore
       });
 
       expect(existsSync("./generated/image.png")).toBe(true);
@@ -228,7 +241,7 @@ describe("node-html-to-image", () => {
   });
 });
 
-async function getTextFromImage(path) {
+async function getTextFromImage(path: string) {
   const worker = await createWorker();
   await worker.loadLanguage("eng");
   await worker.initialize("eng");

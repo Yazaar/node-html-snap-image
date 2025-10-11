@@ -4,7 +4,8 @@ import { makeScreenshot } from "./screenshot";
 import { Screenshot } from "./models/Screenshot";
 
 describe("beforeScreenshot", () => {
-  let page;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let page: any;
   const buffer = new ArrayBuffer();
 
   beforeEach(() => {
@@ -106,7 +107,8 @@ describe("beforeScreenshot", () => {
 });
 
 describe("handlebarsHelpers", () => {
-  let page;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let page: any;
   const buffer = new ArrayBuffer();
 
   beforeEach(() => {
@@ -119,11 +121,11 @@ describe("handlebarsHelpers", () => {
       Object.prototype.hasOwnProperty.call(handlebars.helpers, "equals") &&
       !!handlebars.helpers.equals
     ) {
-      handlebars.registerHelper({ equals: undefined });
+      delete handlebars.helpers.equals;
     }
   });
 
-  const compactHtml = (htmlString) => htmlString.replace(/((^|\n)\s+)/gm, "");
+  const compactHtml = (htmlString: string) => htmlString.replace(/((^|\n)\s+)/gm, "");
 
   describe("if no logic is given in the template", () => {
     const html = "<html><body><h1>Hello world!</h1></body></html>";
@@ -153,7 +155,7 @@ describe("handlebarsHelpers", () => {
         label: "all helpers are functions but no content is passed",
         options: {
           handlebarsHelpers: {
-            equals: (a, b) => a === b,
+            equals: (a: unknown, b: unknown) => a === b,
           },
           html: html,
         },
@@ -164,7 +166,7 @@ describe("handlebarsHelpers", () => {
         options: {
           content: { myOtherVar: "bar" },
           handlebarsHelpers: {
-            equals: (a, b) => a === b,
+            equals: (a: unknown, b: unknown) => a === b,
           },
           html: html,
         },
@@ -176,6 +178,7 @@ describe("handlebarsHelpers", () => {
         await expect(
           makeScreenshot(page, {
             screenshot: new Screenshot(test.options),
+            // @ts-expect-error typing not following conventions
             handlebarsHelpers: test.options.handlebarsHelpers,
           }),
         ).resolves.not.toThrow();
@@ -185,6 +188,7 @@ describe("handlebarsHelpers", () => {
         const p = jest.fn(() => page);
         await makeScreenshot(p(), {
           screenshot: new Screenshot(test.options),
+          // @ts-expect-error typing not following conventions
           handlebarsHelpers: test.options.handlebarsHelpers,
         });
         expect(p().setContent).toHaveBeenCalledWith(html, expect.anything());
@@ -195,7 +199,9 @@ describe("handlebarsHelpers", () => {
       await expect(
         makeScreenshot(page, {
           handlebarsHelpers: {
+            // @ts-expect-error undefined variable
             foo: () => myVar === "foo",
+            // @ts-expect-error typing not following conventions
             bar: "I'm not a valid function",
           },
           screenshot: new Screenshot({
@@ -246,7 +252,7 @@ describe("handlebarsHelpers", () => {
           "handlebarsHelpers is an object, but some helper is not a function",
         options: {
           handlebarsHelpers: {
-            equals: (a, b) => a === b,
+            equals: (a: unknown, b: unknown) => a === b,
             bar: "I'm not a function",
           },
           html: html,
@@ -260,6 +266,7 @@ describe("handlebarsHelpers", () => {
         await expect(
           makeScreenshot(page, {
             screenshot: new Screenshot(test.options),
+            // @ts-expect-error typing not following conventions
             handlebarsHelpers: test.options.handlebarsHelpers,
           }),
         ).rejects.toThrow(test.error);
@@ -281,7 +288,7 @@ describe("handlebarsHelpers", () => {
         label: "all helpers are functions but no content is passed",
         options: {
           handlebarsHelpers: {
-            equals: (a, b) => a === b,
+            equals: (a: unknown, b: unknown) => a === b,
           },
           html: html,
         },
@@ -292,7 +299,7 @@ describe("handlebarsHelpers", () => {
         options: {
           content: undefined,
           handlebarsHelpers: {
-            equals: (a, b) => a === b,
+            equals: (a: unknown, b: unknown) => a === b,
           },
           html: html,
         },
@@ -304,7 +311,7 @@ describe("handlebarsHelpers", () => {
         options: {
           content: { myOtherVar: "bar" },
           handlebarsHelpers: {
-            equals: (a, b) => a === b,
+            equals: (a: unknown, b: unknown) => a === b,
           },
           html: html,
         },
@@ -315,7 +322,7 @@ describe("handlebarsHelpers", () => {
         options: {
           content: { myVar: "foo" },
           handlebarsHelpers: {
-            equals: (a, b) => a === b,
+            equals: (a: unknown, b: unknown) => a === b,
           },
           html: html,
         },
@@ -333,7 +340,7 @@ describe("handlebarsHelpers", () => {
         options: {
           content: { myVar: "bar" },
           handlebarsHelpers: {
-            equals: (a, b) => a === b,
+            equals: (a: unknown, b: unknown) => a === b,
           },
           html: html,
         },

@@ -3,11 +3,11 @@ import { Cluster } from "puppeteer-cluster";
 
 import { Screenshot } from "./models/Screenshot";
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe("node-html-to-image | Unit", () => {
-  let mockExit;
-  let launchMock;
+  let mockExit: jest.SpyInstance;
+  let launchMock: jest.SpyInstance;
   const buffer1 = Buffer.alloc(1);
   const buffer2 = Buffer.alloc(1);
   const html = "<html><body>{{message}}</body></html>";
