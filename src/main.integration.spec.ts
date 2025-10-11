@@ -7,43 +7,26 @@ import { createWorker } from "tesseract.js";
 import { nodeHtmlToImage } from "./main";
 
 describe("node-html-to-image", () => {
-  let mockExit: jest.SpyInstance;
-  let mockConsoleErr: jest.SpyInstance;
-  const originalConsoleError = console.error;
   beforeEach(() => {
     rimraf.sync("./generated");
     mkdirSync("./generated");
-    mockExit = jest.spyOn(process, "exit").mockImplementation((number) => {
-      throw new Error("process.exit: " + number);
-    });
-    mockConsoleErr = jest
-      .spyOn(console, "error")
-      .mockImplementation((value) => originalConsoleError(value));
-  });
-
-  afterEach(() => {
-    mockExit.mockRestore();
-    mockConsoleErr.mockRestore();
   });
 
   afterAll(() => {
     rimraf.sync("./generated");
   });
   describe("error", () => {
-    it("should stop the program properly", async () => {
-      /* eslint-disable @typescript-eslint/ban-ts-comment */
+    it("should throw due to invalid quality parameter", async () => {
       await expect(async () => {
         await nodeHtmlToImage({
           html: "<html></html>",
           type: "jpeg",
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           quality: "wrong value",
           puppeteerArgs: { args: ['--no-sandbox'] }
         });
       }).rejects.toThrow();
-
-      expect(mockExit).toHaveBeenCalledWith(1);
-      /* eslint-enable @typescript-eslint/ban-ts-comment */
     });
   });
 
@@ -86,10 +69,7 @@ describe("node-html-to-image", () => {
           output: "./generated/image.png",
           puppeteerArgs: { args: ['--no-sandbox'] }
         });
-      }).rejects.toThrow();
-      expect(mockConsoleErr).toHaveBeenCalledWith(
-        new Error("You must provide an html property.")
-      );
+      }).rejects.toThrow("You must provide an html property.");
     });
 
     it("should throw timeout error", async () => {
@@ -99,10 +79,7 @@ describe("node-html-to-image", () => {
           html: "<html></html>",
           puppeteerArgs: { args: ['--no-sandbox'] }
         });
-      }).rejects.toThrow();
-      expect(mockConsoleErr).toHaveBeenCalledWith(
-        new Error("Timeout hit: 500")
-      );
+      }).rejects.toThrow("Timeout hit: 500");
     });
 
     it("should generate an jpeg image and return Buffer", async () => {
