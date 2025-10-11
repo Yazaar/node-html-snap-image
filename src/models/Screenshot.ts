@@ -1,17 +1,17 @@
-import { ImageType, Encoding, Content, ScreenshotParams } from "../types";
+import { ImageType, Encoding, Content, ScreenshotParams, ScreenshotType } from "../types";
 
-export class Screenshot {
+export class Screenshot<TE extends Encoding, TC extends Content> {
   output: string;
   content: Content;
   selector: string;
   html: string;
   quality?: number;
-  buffer?: Buffer | string;
+  buffer?: ScreenshotType<TE>;
   type?: ImageType;
   encoding?: Encoding;
   transparent?: boolean;
 
-  constructor(params: ScreenshotParams) {
+  constructor(params: ScreenshotParams<TE, TC>) {
     if (!params || !params.html) {
       throw Error("You must provide an html property.");
     }
@@ -45,7 +45,11 @@ export class Screenshot {
   }
 
   setBuffer(buffer: Buffer | string) {
-    this.buffer = buffer;
+    if (this.encoding === 'base64') {
+      this.buffer = (typeof buffer === 'string' ? buffer : buffer.toString('base64')) as ScreenshotType<TE>;
+    } else {
+      this.buffer = (typeof buffer === 'string' ? Buffer.from(buffer) : buffer) as ScreenshotType<TE>;
+    }
   }
 }
 

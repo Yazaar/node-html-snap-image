@@ -1,9 +1,9 @@
 import { Page } from "puppeteer";
 import handlebars, { compile } from "handlebars";
 
-import { MakeScreenshotParams } from "./types";
+import { ContentObject, Encoding, MakeScreenshotParams } from "./types";
 
-export async function makeScreenshot(
+export async function makeScreenshot<TE extends Encoding>(
   page: Page,
   {
     screenshot,
@@ -11,8 +11,8 @@ export async function makeScreenshot(
     waitUntil = "networkidle0",
     timeout,
     handlebarsHelpers,
-  }: MakeScreenshotParams,
-) {
+  }: MakeScreenshotParams<TE, ContentObject>,
+)  {
   page.setDefaultTimeout(timeout);
   const hasHelpers = handlebarsHelpers && typeof handlebarsHelpers === "object";
   if (hasHelpers) {
