@@ -48,7 +48,7 @@ export async function makeScreenshot(
     quality: screenshot.quality,
   });
 
-  screenshot.setBuffer(Buffer.from(result));
+  screenshot.setBuffer(typeof result === 'string' ? result : Buffer.from(result));
 
   return screenshot;
 }

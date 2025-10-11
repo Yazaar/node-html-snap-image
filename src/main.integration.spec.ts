@@ -48,14 +48,15 @@ describe("node-html-to-image", () => {
   });
 
   describe("single image", () => {
-    it("should generate output file", async () => {
-      await nodeHtmlToImage({
+    it("should generate output file and return Buffer", async () => {
+      const imageBuffer = await nodeHtmlToImage({
         output: "./generated/image.png",
         html: "<html></html>",
         puppeteerArgs: { args: ['--no-sandbox'] }
       });
 
       expect(existsSync("./generated/image.png")).toBe(true);
+      expect(imageBuffer).toBeInstanceOf(Buffer);
     });
 
     it("should return a buffer", async () => {
@@ -65,6 +66,16 @@ describe("node-html-to-image", () => {
       });
 
       expect(result).toBeInstanceOf(Buffer);
+    });
+
+    it("should return a base64 string", async () => {
+      const result = await nodeHtmlToImage({
+        html: "<html></html>",
+        encoding: "base64",
+        puppeteerArgs: { args: ['--no-sandbox'] }
+      });
+
+      expect(typeof result).toBe('string');
     });
 
     it("should throw an error if html is not provided", async () => {
@@ -94,8 +105,8 @@ describe("node-html-to-image", () => {
       );
     });
 
-    it("should generate an jpeg image", async () => {
-      await nodeHtmlToImage({
+    it("should generate an jpeg image and return Buffer", async () => {
+      const imageBuffer = await nodeHtmlToImage({
         output: "./generated/image.jpg",
         html: "<html></html>",
         type: "jpeg",
@@ -103,6 +114,7 @@ describe("node-html-to-image", () => {
       });
 
       expect(existsSync("./generated/image.jpg")).toBe(true);
+      expect(imageBuffer).toBeInstanceOf(Buffer);
     });
 
     it("should put html in output file", async () => {
@@ -143,8 +155,8 @@ describe("node-html-to-image", () => {
   });
 
   describe("batch", () => {
-    it("should create two images", async () => {
-      await nodeHtmlToImage({
+    it("should create two images and return two Buffers", async () => {
+      const imageBuffers = await nodeHtmlToImage({
         type: "png",
         quality: 300,
         html: "<html><body>Hello {{name}}!</body></html>",
@@ -154,6 +166,14 @@ describe("node-html-to-image", () => {
         ],
         puppeteerArgs: { args: ['--no-sandbox'] }
       });
+
+      expect(imageBuffers?.length).toBe(2);
+
+      const buffer1 = imageBuffers?.[0];
+      const buffer2 = imageBuffers?.[1];
+
+      expect(buffer1).toBeInstanceOf(Buffer);
+      expect(buffer2).toBeInstanceOf(Buffer);
 
       const text1 = await getTextFromImage("./generated/image1.png");
       expect(text1.trim()).toBe("Hello Yvonnick!");
@@ -223,7 +243,7 @@ describe("node-html-to-image", () => {
         output: "./generated/image.png",
         html: "<html></html>",
         puppeteerArgs: { executablePath, args: ['--no-sandbox'] },
-        puppeteer: puppeteerCore
+        puppeteer: puppeteerCore,
       });
 
       expect(existsSync("./generated/image.png")).toBe(true);
