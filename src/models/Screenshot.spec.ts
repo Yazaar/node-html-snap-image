@@ -56,6 +56,7 @@ describe("Screenshot", () => {
     });
 
     expect(() => {
+      // @ts-expect-error html has to be a string
       screenshot.setHTML(null);
     }).toThrow("You must provide an html property.");
 
@@ -158,6 +159,7 @@ describe("Screenshot", () => {
 
   it("should throw an Error if html is null", () => {
     expect(() => {
+      // @ts-expect-error html has to be a string
       new Screenshot({ html: null });
     }).toThrow("You must provide an html property.");
   });
