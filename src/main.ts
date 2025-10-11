@@ -81,8 +81,7 @@ export async function nodeHtmlToImage<TE extends Encoding | undefined = undefine
       ? screenshots.map(({ buffer }) => buffer)
       : screenshots[0].buffer) as ConditionalArray<TC, ScreenshotType<TE>, ScreenshotType<TE>>;
   } catch (err) {
-    console.error(err);
     await cluster.close();
-    process.exit(1);
+    throw err;
   }
 }
