@@ -1,4 +1,4 @@
-import type { Page, PuppeteerLifeCycleEvent, PuppeteerNodeLaunchOptions } from "puppeteer";
+import type { Page, PuppeteerLifeCycleEvent, LaunchOptions as PuppeteerNodeLaunchOptions } from "puppeteer";
 import type { Screenshot } from "./models/Screenshot";
 
 // Content (ContentObject + ContentArrayItem) declares the possible formatting of the content object
