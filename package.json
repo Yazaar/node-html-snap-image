@@ -1,11 +1,17 @@
 {
-  "name": "node-html-to-image",
-  "version": "5.0.0",
+  "name": "node-html-snap-image",
+  "version": "6.0.0",
   "description": "A Node.js library that generates images from HTML",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "git@github.com:frinyvonnick/node-html-to-image.git",
-  "author": "FRIN Yvonnick <frin.yvonnick@gmail.com>",
+  "repository": "git@github.com:Yazaar/node-html-snap-image.git",
+  "bugs": {
+    "url": "https://github.com/Yazaar/node-html-snap-image/issues"
+  },
+  "author": "Yazaar yazaaroffical@gmail.com",
+  "contributors": [
+    "FRIN Yvonnick <frin.yvonnick@gmail.com>"
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "handlebars": "4.7.8",

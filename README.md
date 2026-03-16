@@ -1,21 +1,17 @@
-<h1 align="center">Welcome to node-html-to-image 🌄</h1>
+# Welcome to node-html-snap-image 🌄
+> *This is a fork of [node-html-to-image](https://github.com/frinyvonnick/node-html-to-image)*<br><br>A Node.js library that generates images from HTML
+
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-3.1.0-blue.svg?cacheSeconds=2592000" />
-  <a href="https://github.com/frinyvonnick/node-html-to-image#readme" target="_blank">
+  <img alt="Version" src="https://img.shields.io/badge/version-6.0.0-blue.svg?cacheSeconds=2592000" />
+  <a href="https://github.com/Yazaar/node-html-snap-image#readme" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
   </a>
-  <a href="https://github.com/frinyvonnick/node-html-to-image/blob/master/LICENSE" target="_blank">
+  <a href="https://github.com/Yazaar/node-html-snap-image/blob/master/LICENSE" target="_blank">
     <img alt="License: Apache--2.0" src="https://img.shields.io/badge/License-Apache--2.0-yellow.svg" />
-  </a>
-  <a href="https://twitter.com/yvonnickfrin" target="_blank">
-    <img alt="Twitter: yvonnickfrin" src="https://img.shields.io/twitter/follow/yvonnickfrin.svg?style=social" />
   </a>
 </p>
 
-> A Node.js library that generates images from HTML
-
-### 🏠 [Homepage](https://github.com/frinyvonnick/node-html-to-image)
-
+### 🏠 [Homepage](https://github.com/Yazaar/node-html-snap-image)
 
 ## Description
 
@@ -24,9 +20,9 @@ This module exposes a function that generates images (png, jpeg) from HTML. It u
 ## Install
 
 ```sh
-npm install node-html-to-image
+npm install node-html-snap-image
 # or
-yarn add node-html-to-image
+yarn add node-html-snap-image
 ```
 
 Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. 
@@ -47,9 +43,9 @@ Note: When you install Puppeteer, it downloads a recent version of Chromium (~17
 ### Simple example
 
 ```js
-const nodeHtmlToImage = require('node-html-to-image')
+const nodeHtmlSnapImage = require('node-html-snap-image')
 
-nodeHtmlToImage({
+nodeHtmlSnapImage({
   output: './image.png',
   html: '<html><body>Hello world!</body></html>'
 })
@@ -61,7 +57,7 @@ nodeHtmlToImage({
 The library is written in Typescript so it is available out of the box:
 
 ```ts
-import nodeHtmlToImage from 'node-html-to-image'
+import nodeHtmlSnapImage from 'node-html-snap-image'
 ```
 
 ### Options
@@ -78,22 +74,21 @@ List of all available options:
 | waitUntil         | Define when to consider markup succeded. [Learn more](https://github.com/puppeteer/puppeteer/blob/8370ec88ae94fa59d9e9dc0c154e48527d48c9fe/docs/api.md#pagesetcontenthtml-options).                                    | string or Array<string> (default: networkidle0) | optional    |
 | puppeteer         | The puppeteer property let you use a different puppeteer library (like puppeteer-core or puppeteer-extra).                                                                                                             | object (default: puppeteer)                     | optional    |
 | puppeteerArgs     | The puppeteerArgs property let you pass down custom configuration to puppeteer. [Learn more](https://github.com/puppeteer/puppeteer/blob/8370ec88ae94fa59d9e9dc0c154e48527d48c9fe/docs/api.md#puppeteerlaunchoptions). | object                                          | optional    |
-| beforeScreenshot  | An async function that will execute just before screenshot is taken. Gives access to puppeteer page element.                                                                                                           | Function                                        | optional |
+| beforeScreenshot  | An async function that will execute just before screenshot is taken. Gives access to puppeteer page element.                                                                                                           | Function                                        | optional    |
 | transparent       | The transparent property lets you generate images with transparent background (for png type).                                                                                                                          | boolean                                         | optional    |
 | encoding          | The encoding property of the image. Options are `binary` (default) or `base64`.                                                                                                                                        | string                                          | optional    |
 | selector          | The selector property lets you target a specific element to perform the screenshot on. (default `body`)                                                                                                                | string                                          | optional    |
-| handlebarsHelpers | The handlebarsHelpers property lets add custom logic to the templates using Handlebars sub-expressions. [Learn more](https://handlebarsjs.com/guide/builtin-helpers.html#sub-expressions).                             | object                                          | optional |
-| timeout           | Timeout for a [puppeteer-cluster](https://github.com/thomasdondorf/puppeteer-cluster#clusterlaunchoptions) (in `ms`). Defaults to `30000` (30 seconds).                                                                | number                                          | optional |
-
+| handlebarsHelpers | The handlebarsHelpers property lets add custom logic to the templates using Handlebars sub-expressions. [Learn more](https://handlebarsjs.com/guide/builtin-helpers.html#sub-expressions).                             | object                                          | optional    |
+| timeout           | Timeout for a [puppeteer-cluster](https://github.com/thomasdondorf/puppeteer-cluster#clusterlaunchoptions) (in `ms`). Defaults to `30000` (30 seconds).                                                                | number                                          | optional    |
 
 ### Setting output image resolution
 
-`node-html-to-image` takes a screenshot of the body tag's content. If you want to set output image's resolution you need to set its dimension using CSS like in the following example.
+`node-html-snap-image` takes a screenshot of the body tag's content. If you want to set output image's resolution you need to set its dimension using CSS like in the following example.
 
 ```js
-const nodeHtmlToImage = require('node-html-to-image')
+const nodeHtmlSnapImage = require('node-html-snap-image')
 
-nodeHtmlToImage({
+nodeHtmlSnapImage({
   output: './image.png',
   html: `<html>
     <head>
@@ -113,12 +108,12 @@ nodeHtmlToImage({
 
 ### Example with Handlebars
 
-[Handlerbars](https://handlebarsjs.com/) is a templating language. It generates HTML from a template and an input object. In the following example we provide a template to `node-html-to-image` and a content object to fill the template.
+[Handlerbars](https://handlebarsjs.com/) is a templating language. It generates HTML from a template and an input object. In the following example we provide a template to `node-html-snap-image` and a content object to fill the template.
 
 ```js
-const nodeHtmlToImage = require('node-html-to-image')
+const nodeHtmlSnapImage = require('node-html-snap-image')
 
-nodeHtmlToImage({
+nodeHtmlSnapImage({
   output: './image.png',
   html: '<html><body>Hello {{name}}!</body></html>',
   content: { name: 'you' }
@@ -136,9 +131,9 @@ nodeHtmlToImage({
 For example, if you had a variable and wanted to do some conditional rendering depending on its value, you could do this:
 
 ```js
-const nodeHtmlToImage = require('node-html-to-image')
+const nodeHtmlSnapImage = require('node-html-snap-image')
 
-nodeHtmlToImage({
+nodeHtmlSnapImage({
   output: './image.png',
   content: { myVar: 'foo' },
   handlebarsHelpers: {
@@ -160,14 +155,14 @@ nodeHtmlToImage({
 If you want to display an image which is stored remotely do it as usual. In case your image is stored locally I recommend having your image in `base64`. Then you need to pass it to the template with the content property. Here is an example:
 
 ```js
-const nodeHtmlToImage = require('node-html-to-image')
+const nodeHtmlSnapImage = require('node-html-snap-image')
 const fs = require('fs');
 
 const image = fs.readFileSync('./image.jpg');
 const base64Image = new Buffer.from(image).toString('base64');
 const dataURI = 'data:image/jpeg;base64,' + base64Image
 
-nodeHtmlToImage({
+nodeHtmlSnapImage({
   output: './image.png',
   html: '<html><body><img src="{{{imageSource}}}" /></body></html>',
   content: { imageSource: dataURI }
@@ -200,10 +195,10 @@ If you don't want to save the image to disk and would rather do something with i
 ```js
 const express = require('express');
 const router = express.Router();
-const nodeHtmlToImage = require('node-html-to-image');
+const nodeHtmlSnapImage = require('node-html-snap-image');
 
 router.get(`/api/tweet/render`, async function(req, res) {
-  const image = await nodeHtmlToImage({
+  const image = await nodeHtmlSnapImage({
     html: '<html><body><div>Check out what I just did! #cool</div></body></html>'
   });
   res.writeHead(200, { 'Content-Type': 'image/png' });
@@ -220,7 +215,7 @@ If you want to generate multiple images in one call you must provide an array to
 To save on the disk you must provide the output property on each object in the content property.
 
 ```js
-nodeHtmlToImage({
+nodeHtmlSnapImage({
   html: '<html><body>Hello {{name}}!</body></html>',
   content: [{ name: 'Pierre', output: './image1.png' }, { name: 'Paul', output: './image2.png' }, { name: 'Jacques', output: './image3.png' }]
 })
@@ -232,7 +227,7 @@ nodeHtmlToImage({
 If you don't want to save the images to disk you can use the returned value instead. It returns an array of Buffer objects.
 
 ```js
-const images = await nodeHtmlToImage({
+const images = await nodeHtmlSnapImage({
   html: '<html><body>Hello {{name}}!</body></html>',
   content: [{ name: 'Pierre' }, { name: 'Paul' }, { name: 'Jacques' }]
 })
@@ -244,10 +239,10 @@ If you want to use different puppeteer library you must provide the puppeteer pr
 
 ```js
 const chrome = require('chrome-aws-lambda');
-const nodeHtmlToImage = require('node-html-to-image')
+const nodeHtmlSnapImage = require('node-html-snap-image')
 const puppeteerCore = require('puppeteer-core');
 
-const image = await nodeHtmlToImage({
+const image = await nodeHtmlSnapImage({
   html: '<html><body><div>Hello</div></body></html>',
   puppeteer: puppeteerCore,
   puppeteerArgs: {
@@ -260,13 +255,9 @@ const image = await nodeHtmlToImage({
 ## Related
 
 ### Libraries
+<p style="opacity: 0.75">The main project node-html-snap-image originates from inlcudes a CLI tool</p>
 
 - [node-html-to-image-cli](https://github.com/frinyvonnick/node-html-to-image-cli) - CLI for this module
-
-### Articles 
-
-- [Generate images from HTML in Node.js](https://yvonnickfrin.dev/node-html-to-image)
-- [node-html-to-image v1.2 is out 🎉](https://dev.to/yvonnickfrin/node-html-to-image-v1-2-is-out-42f4)
 
 ## Run tests
 
@@ -274,7 +265,7 @@ const image = await nodeHtmlToImage({
 yarn test
 ```
 
-## Author
+## Original Author of [node-html-to-image](https://github.com/frinyvonnick/node-html-to-image)
 
 👤 **FRIN Yvonnick <frin.yvonnick@gmail.com>**
 
@@ -284,7 +275,7 @@ yarn test
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/frinyvonnick/node-html-to-image/issues).
+Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/Yazaar/node-html-snap-image/issues).
 
 ## Show your support
 
