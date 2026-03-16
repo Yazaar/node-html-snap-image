@@ -37,7 +37,6 @@
     "@typescript-eslint/eslint-plugin": "^5.30.4",
     "@typescript-eslint/parser": "^5.30.4",
     "eslint": "^8.19.0",
-    "gitmoji-changelog": "2.3.0",
     "jest": "^28.1.2",
     "jest-circus": "^28.1.2",
     "puppeteer-core": "23.2.2",

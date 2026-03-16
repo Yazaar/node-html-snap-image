@@ -21,8 +21,6 @@ This module exposes a function that generates images (png, jpeg) from HTML. It u
 
 ```sh
 npm install node-html-snap-image
-# or
-yarn add node-html-snap-image
 ```
 
 Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. 
@@ -262,7 +260,7 @@ const image = await nodeHtmlSnapImage({
 ## Run tests
 
 ```sh
-yarn test
+npm run test
 ```
 
 ## Original Author of [node-html-to-image](https://github.com/frinyvonnick/node-html-to-image)
