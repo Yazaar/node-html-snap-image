@@ -1,6 +1,6 @@
 {
   "name": "node-html-snap-image",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "A Node.js library that generates images from HTML",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,6 +24,7 @@
     "build": "tsc"
   },
   "files": [
+    "dist",
     "src",
     "types",
     "!src/*.spec.js"

@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="6.0.1"></a>
+## 6.0.1 (2025-03-18)
+
+### Changed
+- Fix case where base64 strings during encoding mode base64 gets wrapped in a Buffer object. By this change following the same spec as v4.0.0 and the existing typing conventions.
+- More advanced and dynamic typing according to provided options payload such as dynamic and stricter payload and response typing
+- JS Doc on the exposed function, leading to easier use for end users
+- Fix issue where throws close down the entire app entirely, leading to parent applications unexpectedly shutting down without any type of feedback. Now it will simply throw, but safely close down the cluster via a catch still.
+
 <a name="5.0.0"></a>
 ## 5.0.0 (2024-09-03)
 
