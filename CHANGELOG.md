@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="6.0.2"></a>
+## 6.0.2 (2025-04-15)
+
+### Changed
+- Bump dependencies to resolve vulnerabilities, expecially the critical of handlebars
+- Update README to describe changes compared to original project node-html-to-image
+
 <a name="6.0.1"></a>
 ## 6.0.1 (2025-03-18)
 
