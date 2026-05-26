@@ -1,6 +1,6 @@
 {
   "name": "node-html-snap-image",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "description": "A Node.js library that generates images from HTML",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
