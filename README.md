@@ -2,7 +2,7 @@
 > *This is a fork of [node-html-to-image](https://github.com/frinyvonnick/node-html-to-image)*<br><br>A Node.js library that generates images from HTML
 
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-6.0.3-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-6.1.0-blue.svg?cacheSeconds=2592000" />
   <a href="https://github.com/Yazaar/node-html-snap-image#readme" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
   </a>
