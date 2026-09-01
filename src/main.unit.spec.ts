@@ -1,19 +1,19 @@
-import { nodeHtmlToImage } from "./main";
-import { Cluster } from "puppeteer-cluster";
+import { nodeHtmlToImage } from './main';
+import { Cluster } from 'puppeteer-cluster';
 
-import { Screenshot } from "./models/Screenshot";
+import { Screenshot } from './models/Screenshot';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-describe("node-html-to-image | Unit", () => {
+describe('node-html-to-image | Unit', () => {
   let mockExit: jest.SpyInstance;
   let launchMock: jest.SpyInstance;
   const buffer1 = Buffer.alloc(1);
   const buffer2 = Buffer.alloc(1);
-  const html = "<html><body>{{message}}</body></html>";
+  const html = '<html><body>{{message}}</body></html>';
 
   beforeEach(() => {
-    launchMock = jest.spyOn(Cluster, "launch").mockImplementation(
+    launchMock = jest.spyOn(Cluster, 'launch').mockImplementation(
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       jest.fn(() => ({
@@ -31,11 +31,11 @@ describe("node-html-to-image | Unit", () => {
             return screenshot;
           }),
         idle: jest.fn(),
-        close: jest.fn(),
+        close: jest.fn()
       }))
     );
-    mockExit = jest.spyOn(process, "exit").mockImplementation((number) => {
-      throw new Error("process.exit: " + number);
+    mockExit = jest.spyOn(process, 'exit').mockImplementation((number) => {
+      throw new Error('process.exit: ' + number);
     });
   });
 
@@ -43,10 +43,10 @@ describe("node-html-to-image | Unit", () => {
     mockExit.mockRestore();
   });
 
-  it("should sort buffer in the right order", async () => {
+  it('should sort buffer in the right order', async () => {
     const result = await nodeHtmlToImage({
       html,
-      content: [{ message: "Hello world!" }, { message: "Bonjour monde!" }],
+      content: [{ message: 'Hello world!' }, { message: 'Bonjour monde!' }]
     });
 
     expect(result).toEqual([buffer1, buffer2]);
@@ -55,12 +55,25 @@ describe("node-html-to-image | Unit", () => {
   it("should pass 'timeout' to 'puppeteer-cluster' via options", async () => {
     const CLUSTER_TIMEOUT = 60 * 1000;
     await nodeHtmlToImage({
-        html,
-        timeout: CLUSTER_TIMEOUT,
+      html,
+      timeout: CLUSTER_TIMEOUT
     });
 
-    expect(launchMock).toHaveBeenCalledWith(expect.objectContaining({ timeout: CLUSTER_TIMEOUT }))
+    expect(launchMock).toHaveBeenCalledWith(expect.objectContaining({ timeout: CLUSTER_TIMEOUT }));
+  });
+
+  it('should preserve caller-provided puppeteer headless configuration', async () => {
+    await nodeHtmlToImage({
+      html,
+      puppeteerArgs: { headless: false }
+    });
+
+    expect(launchMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        puppeteerOptions: expect.objectContaining({ headless: false })
+      })
+    );
   });
 });
 
-jest.mock("puppeteer-cluster");
+jest.mock('puppeteer-cluster');
