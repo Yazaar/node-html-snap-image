@@ -1,4 +1,10 @@
-import { ElementHandle, Page, ScreenshotOptions } from 'puppeteer';
+import type {
+  ElementHandle,
+  Page,
+  PuppeteerLifeCycleEvent,
+  ScreenshotOptions,
+  SetContentWaitForOptions
+} from 'puppeteer';
 import handlebars, { compile } from 'handlebars';
 
 import { ContentObject, Encoding, MakeScreenshotParams } from './types';
@@ -29,7 +35,27 @@ export async function makeScreenshot<TE extends Encoding | undefined>(
     screenshot.setHTML(template(screenshot.content ?? {}));
   }
 
-  await page.setContent(screenshot.html, { waitUntil });
+  // Puppeteer updated their API to exclude networkidle from setContent - we will now exclude it from setContent
+  // and manually run waitForNetworkIdle during these options
+  const waitUntilEvents = Array.isArray(waitUntil) ? waitUntil : [waitUntil];
+  const contentWaitUntil = waitUntilEvents.filter(
+    (event): event is Exclude<PuppeteerLifeCycleEvent, 'networkidle0' | 'networkidle2'> =>
+      event !== 'networkidle0' && event !== 'networkidle2'
+  );
+  const setContentWaitUntil: SetContentWaitForOptions['waitUntil'] = Array.isArray(waitUntil)
+    ? contentWaitUntil.length > 0 ? contentWaitUntil : 'domcontentloaded'
+    : waitUntil === 'networkidle0' || waitUntil === 'networkidle2'
+      ? 'domcontentloaded'
+      : waitUntil;
+
+  await page.setContent(screenshot.html, { waitUntil: setContentWaitUntil });
+
+  if (waitUntilEvents.some((event) => event === 'networkidle0' || event === 'networkidle2')) {
+    await page.waitForNetworkIdle({
+      concurrency: waitUntilEvents.includes('networkidle0') ? 0 : 2,
+      idleTime: 500
+    });
+  }
 
   const element = await page.$(screenshot.selector);
   if (!element) {
