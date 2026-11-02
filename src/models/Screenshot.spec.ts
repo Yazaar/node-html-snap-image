@@ -1,4 +1,4 @@
-import { describe } from 'jest-circus';
+import { describe, expect, it } from 'vitest';
 import { Screenshot } from './Screenshot';
 
 describe('Screenshot', () => {

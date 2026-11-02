@@ -1,3 +1,4 @@
+import { describe, it, beforeEach, afterEach, expect, vi, type MockInstance } from 'vitest';
 import { nodeHtmlToImage } from './main';
 import { Cluster } from 'puppeteer-cluster';
 
@@ -6,18 +7,18 @@ import { Screenshot } from './models/Screenshot';
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe('node-html-to-image | Unit', () => {
-  let mockExit: jest.SpyInstance;
-  let launchMock: jest.SpyInstance;
+  let mockExit: MockInstance;
+  let launchMock: MockInstance;
   const buffer1 = Buffer.alloc(1);
   const buffer2 = Buffer.alloc(1);
   const html = '<html><body>{{message}}</body></html>';
 
   beforeEach(() => {
-    launchMock = jest.spyOn(Cluster, 'launch').mockImplementation(
+    launchMock = vi.spyOn(Cluster, 'launch').mockImplementation(
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      jest.fn(() => ({
-        execute: jest
+      vi.fn(() => ({
+        execute: vi
           .fn()
           .mockImplementationOnce(async () => {
             const screenshot = new Screenshot({ html });
@@ -30,11 +31,11 @@ describe('node-html-to-image | Unit', () => {
             screenshot.setBuffer(buffer2);
             return screenshot;
           }),
-        idle: jest.fn(),
-        close: jest.fn()
+        idle: vi.fn(),
+        close: vi.fn()
       }))
     );
-    mockExit = jest.spyOn(process, 'exit').mockImplementation((number) => {
+    mockExit = vi.spyOn(process, 'exit').mockImplementation((number) => {
       throw new Error('process.exit: ' + number);
     });
   });
@@ -76,4 +77,4 @@ describe('node-html-to-image | Unit', () => {
   });
 });
 
-jest.mock('puppeteer-cluster');
+vi.mock('puppeteer-cluster');

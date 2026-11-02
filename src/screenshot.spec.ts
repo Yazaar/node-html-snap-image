@@ -1,7 +1,16 @@
-import { describe } from 'jest-circus';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 import handlebars from 'handlebars';
 import { makeScreenshot } from './screenshot';
 import { Screenshot } from './models/Screenshot';
+import { Page } from 'puppeteer';
+import { Content, Encoding, MakeScreenshotParams, ScreenshotParams } from './types';
+
+interface TestDescriptor {
+  label: string,
+  options: ScreenshotParams<Encoding, Content>,
+  handlebarsHelpers?: MakeScreenshotParams<Encoding, Content>['handlebarsHelpers']
+}
+
 
 describe('beforeScreenshot', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -10,14 +19,15 @@ describe('beforeScreenshot', () => {
 
   beforeEach(() => {
     page = {
-      setContent: jest.fn(),
-      setDefaultTimeout: jest.fn(),
-      $: jest.fn(() => ({ screenshot: jest.fn(() => buffer) }))
+      setContent: vi.fn(),
+      waitForNetworkIdle: vi.fn(),
+      setDefaultTimeout: vi.fn(),
+      $: vi.fn(() => ({ screenshot: vi.fn(() => buffer) }))
     };
   });
 
   it('should call beforeScreenshot with page', async () => {
-    const beforeScreenshot = jest.fn();
+    const beforeScreenshot = vi.fn();
     await makeScreenshot(page, {
       beforeScreenshot,
       screenshot: new Screenshot({
@@ -87,13 +97,31 @@ describe('beforeScreenshot', () => {
     });
   });
 
+  it('should wait for network idle after setting content', async () => {
+    await makeScreenshot(page, {
+      screenshot: new Screenshot({
+        html: '<html><body>Hello world!</body></html>'
+      }),
+      waitUntil: 'networkidle2'
+    });
+
+    expect(page.setContent).toHaveBeenCalledWith(expect.anything(), {
+      waitUntil: 'domcontentloaded'
+    });
+    expect(page.waitForNetworkIdle).toHaveBeenCalledWith({
+      concurrency: 2,
+      idleTime: 500
+    });
+  });
+
   it('should use full-page screenshot options when clip.full is true', async () => {
     const pageWithFullCapture = {
-      setContent: jest.fn(),
-      setDefaultTimeout: jest.fn(),
-      $: jest.fn(() => ({ screenshot: jest.fn(() => buffer) })),
-      screenshot: jest.fn(() => buffer)
-    };
+      setContent: vi.fn(),
+      waitForNetworkIdle: vi.fn(),
+      setDefaultTimeout: vi.fn(),
+      $: vi.fn(() => ({ screenshot: vi.fn(() => buffer) })),
+      screenshot: vi.fn(() => buffer)
+    } as unknown as Page;
 
     await makeScreenshot(pageWithFullCapture, {
       clip: { full: true },
@@ -113,14 +141,15 @@ describe('beforeScreenshot', () => {
 
   it('should compute clip coordinates from the element bounds when clip.points is provided', async () => {
     const element = {
-      screenshot: jest.fn(() => buffer),
-      boundingBox: jest.fn(() => ({ x: 10, y: 20, width: 30, height: 40 }))
+      screenshot: vi.fn(() => buffer),
+      boundingBox: vi.fn(() => ({ x: 10, y: 20, width: 30, height: 40 }))
     };
     const pageWithClip = {
-      setContent: jest.fn(),
-      setDefaultTimeout: jest.fn(),
-      $: jest.fn(() => element)
-    };
+      setContent: vi.fn(),
+      waitForNetworkIdle: vi.fn(),
+      setDefaultTimeout: vi.fn(),
+      $: vi.fn(() => element)
+    }  as unknown as Page;
 
     await makeScreenshot(pageWithClip, {
       clip: {
@@ -150,7 +179,7 @@ describe('beforeScreenshot', () => {
   });
 
   it('should throw an error if not element is found', async () => {
-    page.$.mockImplementationOnce(jest.fn());
+    page.$.mockImplementationOnce(vi.fn());
     await expect(async () => {
       await makeScreenshot(page, {
         screenshot: new Screenshot({
@@ -169,9 +198,10 @@ describe('handlebarsHelpers', () => {
 
   beforeEach(() => {
     page = {
-      setContent: jest.fn(),
-      setDefaultTimeout: jest.fn(),
-      $: jest.fn(() => ({ screenshot: jest.fn(() => buffer) }))
+      setContent: vi.fn(),
+      waitForNetworkIdle: vi.fn(),
+      setDefaultTimeout: vi.fn(),
+      $: vi.fn(() => ({ screenshot: vi.fn(() => buffer) }))
     };
     if (Object.prototype.hasOwnProperty.call(handlebars.helpers, 'equals') && !!handlebars.helpers.equals) {
       delete handlebars.helpers.equals;
@@ -183,7 +213,7 @@ describe('handlebarsHelpers', () => {
   describe('if no logic is given in the template', () => {
     const html = '<html><body><h1>Hello world!</h1></body></html>';
 
-    const cleanTests = [
+    const cleanTests: TestDescriptor[] = [
       {
         label: 'handlebarsHelpers is not passed',
         options: { content: { myVar: 'foo' }, html: html }
@@ -192,36 +222,37 @@ describe('handlebarsHelpers', () => {
         label: 'handlebarsHelpers is undefined',
         options: {
           content: { myVar: 'foo' },
-          handlebarsHelpers: undefined,
           html: html
-        }
+        },
+        handlebarsHelpers: undefined,
       },
       {
         label: 'handlebarsHelpers is not an object',
         options: {
           content: { myVar: 'foo' },
-          handlebarsHelpers: "I'm not an object",
           html: html
-        }
+        },
+        // @ts-expect-error breaks typing
+        handlebarsHelpers: "I'm not an object",
       },
       {
         label: 'all helpers are functions but no content is passed',
         options: {
-          handlebarsHelpers: {
-            equals: (a: unknown, b: unknown) => a === b
-          },
           html: html
-        }
+        },
+        handlebarsHelpers: {
+          equals: (a: unknown, b: unknown) => a === b
+        },
       },
       {
         label: 'all helpers are functions but content has not the sought variable',
         options: {
           content: { myOtherVar: 'bar' },
-          handlebarsHelpers: {
-            equals: (a: unknown, b: unknown) => a === b
-          },
           html: html
-        }
+        },
+        handlebarsHelpers: {
+          equals: (a: unknown, b: unknown) => a === b
+        },
       }
     ];
 
@@ -230,18 +261,16 @@ describe('handlebarsHelpers', () => {
         await expect(
           makeScreenshot(page, {
             screenshot: new Screenshot(test.options),
-            // @ts-expect-error typing not following conventions
-            handlebarsHelpers: test.options.handlebarsHelpers
+            handlebarsHelpers: test.handlebarsHelpers
           })
         ).resolves.not.toThrow();
       });
 
       it(`if no logic is given in the template, it should render the original template when ${test.label}`, async () => {
-        const p = jest.fn(() => page);
+        const p = vi.fn(() => page);
         await makeScreenshot(p(), {
           screenshot: new Screenshot(test.options),
-          // @ts-expect-error typing not following conventions
-          handlebarsHelpers: test.options.handlebarsHelpers
+          handlebarsHelpers: test.handlebarsHelpers
         });
         expect(p().setContent).toHaveBeenCalledWith(html, expect.anything());
       });
@@ -334,14 +363,14 @@ describe('handlebarsHelpers', () => {
       </html>
     `);
 
-    const validTests = [
+    const validTests: Array<TestDescriptor & { expectedHtml: string }> = [
       {
         label: 'all helpers are functions but no content is passed',
         options: {
-          handlebarsHelpers: {
-            equals: (a: unknown, b: unknown) => a === b
-          },
           html: html
+        },
+        handlebarsHelpers: {
+          equals: (a: unknown, b: unknown) => a === b
         },
         expectedHtml: emptyHtml
       },
@@ -349,10 +378,10 @@ describe('handlebarsHelpers', () => {
         label: 'all helpers are functions but content is passed as undefined',
         options: {
           content: undefined,
-          handlebarsHelpers: {
-            equals: (a: unknown, b: unknown) => a === b
-          },
           html: html
+        },
+        handlebarsHelpers: {
+          equals: (a: unknown, b: unknown) => a === b
         },
         expectedHtml: emptyHtml
       },
@@ -360,10 +389,10 @@ describe('handlebarsHelpers', () => {
         label: 'all helpers are functions but content has not the sought variable',
         options: {
           content: { myOtherVar: 'bar' },
-          handlebarsHelpers: {
-            equals: (a: unknown, b: unknown) => a === b
-          },
           html: html
+        },
+        handlebarsHelpers: {
+          equals: (a: unknown, b: unknown) => a === b
         },
         expectedHtml: emptyHtml
       },
@@ -371,10 +400,10 @@ describe('handlebarsHelpers', () => {
         label: 'helpers and content are valid, and the condition is met',
         options: {
           content: { myVar: 'foo' },
-          handlebarsHelpers: {
-            equals: (a: unknown, b: unknown) => a === b
-          },
           html: html
+        },
+        handlebarsHelpers: {
+          equals: (a: unknown, b: unknown) => a === b
         },
         expectedHtml: compactHtml(`
           <html>
@@ -389,10 +418,10 @@ describe('handlebarsHelpers', () => {
         label: 'helpers and content are valid, and the condition is not met',
         options: {
           content: { myVar: 'bar' },
-          handlebarsHelpers: {
-            equals: (a: unknown, b: unknown) => a === b
-          },
           html: html
+        },
+        handlebarsHelpers: {
+          equals: (a: unknown, b: unknown) => a === b
         },
         expectedHtml: emptyHtml
       }
@@ -403,16 +432,16 @@ describe('handlebarsHelpers', () => {
         await expect(
           makeScreenshot(page, {
             screenshot: new Screenshot(test.options),
-            handlebarsHelpers: test.options.handlebarsHelpers
+            handlebarsHelpers: test.handlebarsHelpers
           })
         ).resolves.not.toThrow();
       });
 
       it(`if logic is given in the template, it should render the expected template when ${test.label}`, async () => {
-        const p = jest.fn(() => page);
+        const p = vi.fn(() => page);
         await makeScreenshot(p(), {
           screenshot: new Screenshot(test.options),
-          handlebarsHelpers: test.options.handlebarsHelpers
+          handlebarsHelpers: test.handlebarsHelpers
         });
         expect(p().setContent).toHaveBeenCalledWith(test.expectedHtml, expect.anything());
       });

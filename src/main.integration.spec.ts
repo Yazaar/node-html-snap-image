@@ -1,3 +1,4 @@
+import { describe, it, beforeEach, afterAll, expect } from 'vitest';
 import { existsSync, mkdirSync, readdirSync } from 'fs';
 import puppeteer from 'puppeteer';
 import puppeteerCore from 'puppeteer-core';
@@ -228,8 +229,7 @@ describe('node-html-to-image', () => {
       expect(text2.trim()).toBe('World!');
     });
 
-    it.skip('should handle mass volume well', async () => {
-      jest.setTimeout(60000 * 60);
+    it.skip('should handle mass volume well', { timeout: 60000 * 60 }, async () => {
       expect.hasAssertions();
       const NUMBER_OF_IMAGES = 2000;
       const content = Array.from(Array(NUMBER_OF_IMAGES), (_, i) => ({
@@ -250,7 +250,7 @@ describe('node-html-to-image', () => {
   });
   describe('different instance', () => {
     it('should pass puppeteer instance and generate image', async () => {
-      const executablePath = puppeteer.executablePath();
+      const executablePath = await puppeteer.executablePath();
 
       await nodeHtmlToImage({
         output: './generated/image.png',
